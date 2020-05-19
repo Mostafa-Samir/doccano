@@ -1,5 +1,5 @@
 <template>
-  <div @click="open" @touchend="open" class="highlight-container highlight-container--bottom-labels">
+  <div @click="open" @touchend="open" :class="classes">
     <entity-item
       v-for="(chunk, i) in chunks"
       :key="i"
@@ -88,7 +88,8 @@ export default {
       x: 0,
       y: 0,
       start: 0,
-      end: 0
+      end: 0,
+      classes: ['highlight-container', 'highlight-container--bottom-labels']
     }
   },
   computed: {
@@ -126,6 +127,22 @@ export default {
       }
       return obj
     }
+  },
+  beforeUpdate() {
+    console.log(this.text)
+    const arabic = /[\u0600-\u06FF]/
+    if (arabic.test(this.text[0])) {
+      if (this.classes.includes('rtl')) {
+        return
+      }
+      this.classes.push('rtl')
+    } else {
+      const index = this.classes.indexOf('rtl')
+      if (index > -1) {
+        this.classes.splice(index, 1)
+      }
+    }
+    console.log(this.classes)
   },
   methods: {
     makeChunks(text) {
@@ -220,6 +237,9 @@ export default {
 </script>
 
 <style scoped>
+.rtl {
+  direction: rtl;
+}
 .highlight-container.highlight-container--bottom-labels {
   align-items: flex-start;
 }
